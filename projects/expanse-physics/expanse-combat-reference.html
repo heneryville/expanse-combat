@@ -1,0 +1,496 @@
+<title>Expanse Combat Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single-column tactical briefing with a sticky section rail; plots and calculators read like ship consoles. */
+:root {
+  --bg: #eef1f4;
+  --panel: #ffffff;
+  --ink: #17202b;
+  --muted: #5a6675;
+  --line: #d3d9e0;
+  --accent: #c2410c;      /* drive-plume orange */
+  --accent-soft: #fbe3d4;
+  --cool: #1d5f8a;        /* sensor blue */
+  --cool-soft: #dbe9f3;
+  --ok: #2f7d4f; --warn: #b7791f; --crit: #b42318;
+  --t-book: #c2410c; --t-show: #7c3aed; --t-rpg: #0e7490; --t-der: #475569; --t-wiki: #a16207; --t-real: #2f7d4f;
+  --f-display: "Saira Condensed", "Arial Narrow", sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d1218; --panel: #141b24; --ink: #e3e8ee; --muted: #93a0b0; --line: #26313e;
+  --accent: #fb8a4c; --accent-soft: #3a2116; --cool: #6cb4e4; --cool-soft: #15283a;
+  --ok: #5cc48a; --warn: #e3b049; --crit: #f07a6c;
+  --t-book: #fb8a4c; --t-show: #b79cff; --t-rpg: #4cc6dc; --t-der: #a6b3c4; --t-wiki: #e3b049; --t-real: #5cc48a;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0d1218; --panel: #141b24; --ink: #e3e8ee; --muted: #93a0b0; --line: #26313e;
+  --accent: #fb8a4c; --accent-soft: #3a2116; --cool: #6cb4e4; --cool-soft: #15283a;
+  --ok: #5cc48a; --warn: #e3b049; --crit: #f07a6c;
+  --t-book: #fb8a4c; --t-show: #b79cff; --t-rpg: #4cc6dc; --t-der: #a6b3c4; --t-wiki: #e3b049; --t-real: #5cc48a;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 64px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; line-height: 1.1; margin: 0; }
+h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 700; letter-spacing: .01em; text-transform: uppercase; }
+h2 { font-size: 1.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: .02em; }
+h3 { font-size: 1.25rem; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font-family: var(--f-mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--muted); }
+.mono { font-family: var(--f-mono); }
+a { color: var(--cool); }
+
+header.hero { display: grid; gap: 14px; padding-block: 8px 28px; border-bottom: 2px solid var(--ink); }
+.lede { font-size: 1.08rem; }
+.keyline { display: flex; flex-wrap: wrap; gap: 8px 18px; font-family: var(--f-mono); font-size: .8rem; color: var(--muted); }
+
+nav.rail { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); display: flex; gap: 4px; overflow-x: auto; padding-block: 8px; margin-bottom: 8px; }
+nav.rail a { font-family: var(--f-mono); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; text-decoration: none; color: var(--muted); padding: 6px 10px; border-radius: 4px; white-space: nowrap; }
+nav.rail a:hover, nav.rail a:focus-visible { color: var(--ink); background: var(--panel); outline: none; }
+
+section { display: grid; gap: 18px; padding-block: 36px 8px; scroll-margin-top: 56px; }
+.sec-head { display: grid; gap: 6px; }
+
+/* Stat strip */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.stat { background: var(--panel); padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
+.stat .v { font-family: var(--f-display); font-size: 1.9rem; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+.stat .v small { font-size: .95rem; color: var(--muted); font-weight: 500; }
+.stat .l { font-size: .82rem; color: var(--muted); }
+
+/* Tables */
+.tbl { overflow-x: auto; border: 1px solid var(--line); background: var(--panel); }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--f-mono); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 500; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.hl { color: var(--accent); font-weight: 600; }
+
+.tier { display: inline-block; font-family: var(--f-mono); font-size: .66rem; font-weight: 500; letter-spacing: .06em; padding: 1px 6px; border-radius: 3px; border: 1px solid currentColor; white-space: nowrap; vertical-align: 1px; }
+.t-book { color: var(--t-book); } .t-show { color: var(--t-show); } .t-rpg { color: var(--t-rpg); }
+.t-der { color: var(--t-der); } .t-wiki { color: var(--t-wiki); } .t-real { color: var(--t-real); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: .82rem; color: var(--muted); }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+
+.callout { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; }
+.callout p { max-width: none; }
+
+/* Plots */
+.plot { background: var(--panel); border: 1px solid var(--line); padding: 16px; overflow-x: auto; }
+.plot svg { display: block; min-width: 640px; width: 100%; height: auto; }
+.plot text { font-family: var(--f-mono); fill: var(--muted); }
+.plot .lab { fill: var(--ink); font-family: var(--f-body); font-size: 12px; }
+.plot .grid { stroke: var(--line); }
+.plot .axis { stroke: var(--muted); }
+
+/* Calculators */
+.calcs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.calc { background: var(--panel); border: 1px solid var(--line); padding: 16px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.calc h3 { font-size: 1.1rem; }
+.field { display: grid; gap: 4px; }
+.field label { display: flex; justify-content: space-between; gap: 8px; font-size: .82rem; color: var(--muted); }
+.field output { font-family: var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+input[type=range]:focus-visible { outline: 2px solid var(--cool); outline-offset: 2px; }
+.readout { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.readout div { background: var(--bg); padding: 8px 10px; display: grid; gap: 2px; }
+.readout b { font-family: var(--f-mono); font-size: 1.05rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+.readout span { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.chip { justify-self: start; font-family: var(--f-mono); font-size: .75rem; padding: 3px 8px; border-radius: 3px; background: var(--cool-soft); color: var(--cool); }
+.chip.warn { background: var(--accent-soft); color: var(--warn); }
+.chip.crit { background: var(--accent-soft); color: var(--crit); }
+
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.two > * { min-width: 0; }
+ul.plain { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 72ch; }
+ol.kill { margin: 0; padding-left: 22px; display: grid; gap: 8px; max-width: 72ch; }
+ol.kill li::marker { font-family: var(--f-mono); color: var(--accent); }
+footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); font-size: .82rem; color: var(--muted); display: grid; gap: 6px; }
+
+@media (max-width: 520px) { .wrap { padding-inline: 16px; } h2 { font-size: 1.6rem; } }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">Sim design brief · Physics, movement, weapons</div>
+    <h1>Expanse Combat Reference</h1>
+    <p class="lede">Numbers for building a combat simulator in the world of <i>The Expanse</i>. The novels give few hard specs. They give scenes: a distance, a time, the weight of a body on a couch. Each figure below is tagged with where it comes from, so you know which ones are canon and which are tuning knobs.</p>
+    <div class="legend" aria-label="Source tiers">
+      <span><b class="tier t-book">BOOK</b> novels, novellas</span>
+      <span><b class="tier t-show">SHOW</b> Amazon series</span>
+      <span><b class="tier t-rpg">RPG</b> Green Ronin RPG</span>
+      <span><b class="tier t-wiki">WIKI</b> fandom wiki, unsourced</span>
+      <span><b class="tier t-der">DERIVED</b> computed from canon</span>
+      <span><b class="tier t-real">REAL</b> real-world physics</span>
+    </div>
+  </header>
+
+  <nav class="rail" aria-label="Sections">
+    <a href="#glance">At a glance</a><a href="#bands">Ranges</a><a href="#move">Movement</a><a href="#crew">Crew g</a><a href="#weapons">Weapons</a><a href="#console">Calculators</a><a href="#ships">Ships</a><a href="#sensors">Sensors</a><a href="#model">Sim model</a>
+  </nav>
+
+  <section id="glance">
+    <div class="sec-head"><div class="eyebrow">At a glance</div><h2>The numbers that set the shape of a fight</h2></div>
+    <div class="stats">
+      <div class="stat"><div class="v">0.3<small> g</small></div><div class="l">Standard civilian cruise <b class="tier t-book">BOOK</b></div></div>
+      <div class="stat"><div class="v">12<small> g</small></div><div class="l">Rocinante's Donnager escape; design max 15–20 g <b class="tier t-book">BOOK</b></div></div>
+      <div class="stat"><div class="v">~5<small> g</small></div><div class="l">Blackout threshold without the juice <b class="tier t-book">BOOK</b></div></div>
+      <div class="stat"><div class="v">30<small> g</small></div><div class="l">Laconian liquid-immersion couches <b class="tier t-wiki">WIKI</b></div></div>
+      <div class="stat"><div class="v">~150<small> g</small></div><div class="l">Torpedo acceleration, from the Canterbury attack <b class="tier t-der">DERIVED</b></div></div>
+      <div class="stat"><div class="v">5<small> km/s</small></div><div class="l">PDC muzzle velocity <b class="tier t-book">BOOK</b></div></div>
+      <div class="stat"><div class="v">200k<small> km</small></div><div class="l">Canterbury torpedo launch range, 8 min flight <b class="tier t-book">BOOK</b></div></div>
+      <div class="stat"><div class="v">600<small> m/s</small></div><div class="l">Slow zone hard speed limit <b class="tier t-book">BOOK</b></div></div>
+    </div>
+    <div class="callout"><p><b>The design rule the books keep returning to:</b> torpedoes rule long range, PDCs rule the last few kilometres, and a railgun only hits a dodging ship when it's close or very fast. Δv (reaction mass), not acceleration, decides who can afford to keep fighting.</p></div>
+  </section>
+
+  <section id="bands">
+    <div class="sec-head"><div class="eyebrow">Engagement bands</div><h2>Where each weapon fights</h2>
+      <p class="muted">Logarithmic distance scale, 100 m to 10 billion km. Shaded bars are canon ranges; the dashed line marks one light-second.</p></div>
+    <div class="plot"><svg id="bandsvg" viewBox="0 0 960 360" role="img" aria-label="Engagement bands on a logarithmic distance scale"></svg></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Band</th><th>Range</th><th>What fights there</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Detection</td><td class="num">system-wide</td><td>Telescopes on lit drives, seen with light lag</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td>Torpedo launch</td><td class="num">10,000–200,000 km</td><td>Torpedoes, 3–10 min flight</td><td><b class="tier t-book">BOOK</b> <b class="tier t-der">DERIVED</b></td></tr>
+        <tr><td>Capital railgun</td><td class="num">1,000–10,000 km</td><td>Battleship turrets vs slow targets; Donnager's "no-fly zone a thousand klicks across"</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td>Railgun vs dodging ship</td><td class="num">10–1,000 km</td><td>"Hundreds or even dozens of kilometers, not thousands"</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td>PDC vs ships</td><td class="num">≤ 20 km</td><td>PDCs as guns</td><td><b class="tier t-der">DERIVED</b></td></tr>
+        <tr><td>PDC vs torpedoes</td><td class="num">1–15 km</td><td>The PDC screen; high hit chance inside 5 km</td><td><b class="tier t-wiki">WIKI</b> <b class="tier t-der">DERIVED</b></td></tr>
+        <tr><td>Boarding</td><td class="num">matched velocity</td><td>Marines, breaching charges, power armor</td><td><b class="tier t-book">BOOK</b></td></tr>
+      </tbody></table></div>
+  </section>
+
+  <section id="move">
+    <div class="sec-head"><div class="eyebrow">Movement</div><h2>The Epstein drive and what it allows</h2>
+      <p>A fusion drive burning water for reaction mass, efficient enough to hold 1 g for weeks. Solomon Epstein's first test (the <i>Drive</i> novella) counted "four gravities… Five. Six. Seven." and ran 37 hours to about 5% of light speed, around 11.5 g on average.</p></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Ship / class</th><th>Cruise</th><th>Combat sustained</th><th>Max / burst</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Any commercial ship</td><td class="num">0.3 g</td><td class="num">—</td><td class="num">—</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td>Canterbury (ice hauler)</td><td class="num">0.3 g</td><td class="num">—</td><td class="num">1–3 g</td><td><b class="tier t-book">BOOK</b> <b class="tier t-show">SHOW</b></td></tr>
+        <tr><td>Knight (shuttle)</td><td class="num">1 g</td><td class="num">3 g</td><td class="num">~7 g</td><td><b class="tier t-wiki">WIKI</b></td></tr>
+        <tr><td>Rocinante (MCRN Corvette-class)</td><td class="num">1 g</td><td class="num">6–8 g, juiced</td><td class="num hl">12 g flown · 15–20 design</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td>Razorback (racing pinnace)</td><td class="num">1 g</td><td class="num">6–10 g</td><td class="num">15 g+</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td>Destroyers / frigates</td><td class="num">1 g</td><td class="num">~5 g</td><td class="num">~10 g</td><td><b class="tier t-der">DERIVED</b></td></tr>
+        <tr><td>Cruisers</td><td class="num">1 g</td><td class="num">~4 g</td><td class="num">~8 g</td><td><b class="tier t-der">DERIVED</b></td></tr>
+        <tr><td>Battleships (Donnager, Truman)</td><td class="num">0.5–1 g</td><td class="num">~3 g</td><td class="num">~6 g</td><td><b class="tier t-der">DERIVED</b></td></tr>
+        <tr><td>Duarte's fleet leaving Mars</td><td class="num">8–10 g</td><td class="num">—</td><td class="num">—</td><td><b class="tier t-wiki">WIKI</b></td></tr>
+        <tr><td>Laconian Falcon</td><td class="num">—</td><td class="num">—</td><td class="num hl">≥ 30 g crewed</td><td><b class="tier t-wiki">WIKI</b></td></tr>
+        <tr><td>Torpedoes</td><td class="num">—</td><td class="num">—</td><td class="num hl">~150–177 g</td><td><b class="tier t-der">DERIVED</b></td></tr>
+      </tbody></table></div>
+    <div class="two">
+      <div class="tbl"><table>
+        <thead><tr><th>Flip-and-burn route</th><th>0.3 g</th><th>1 g</th><th>3 g</th><th>10 g</th></tr></thead>
+        <tbody>
+          <tr><td>Earth–Mars, close</td><td class="num">3.8 d</td><td class="num">2.1 d</td><td class="num">1.2 d</td><td class="num">0.7 d</td></tr>
+          <tr><td>Earth–Mars, far</td><td class="num">8.3 d</td><td class="num">4.5 d</td><td class="num">2.6 d</td><td class="num">1.4 d</td></tr>
+          <tr><td>Earth–Ceres</td><td class="num">7.0 d</td><td class="num">3.8 d</td><td class="num">2.2 d</td><td class="num">1.2 d</td></tr>
+          <tr><td>Jupiter–Saturn</td><td class="num">10.8 d</td><td class="num">5.9 d</td><td class="num">3.4 d</td><td class="num">1.9 d</td></tr>
+          <tr><td>Saturn–Ring</td><td class="num">16.2 d</td><td class="num">8.9 d</td><td class="num">5.1 d</td><td class="num">2.8 d</td></tr>
+        </tbody></table></div>
+      <div class="calc" style="background:var(--panel)">
+        <h3>Why canon trips run long</h3>
+        <p>A full flip-and-burn from Ceres to the Ring at 0.3 g takes about 22 days. The books say about three months. So ships burn, coast, then burn, and reaction mass is the real budget.</p>
+        <p class="muted">Fan estimates put exhaust velocity at 1–7% of light speed and the Rocinante's Δv near 4,000 km/s. <b class="tier t-der">DERIVED</b></p>
+        <h3>The Ring and slow zone</h3>
+        <ul class="plain">
+          <li>About 1,000,000 km across, 1,373 gates. <b class="tier t-book">BOOK</b></li>
+          <li>Anything over 600 m/s is stopped dead. It grips the hull, not the people inside. <b class="tier t-book">BOOK</b></li>
+          <li>After weapons fire, the limit dropped to ~40 m/s in ~5 s, about an 11 g shock. <b class="tier t-der">DERIVED</b></li>
+          <li>Too much mass through a gate at once and ships vanish (13 of 437). <b class="tier t-book">BOOK</b></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="crew">
+    <div class="sec-head"><div class="eyebrow">Human limits</div><h2>The crew is the weakest part of the ship</h2>
+      <p>Drives can outpull people. Combat burns ride on crash couches, gel, and <b>the juice</b>: an anti-blackout injection through the couch that extends g tolerance. It leaves crews wrung out afterwards.</p></div>
+    <div class="plot"><svg id="gsvg" viewBox="0 0 960 190" role="img" aria-label="Crew g-tolerance scale from 0 to 32 g"></svg></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Load</th><th>Duration</th><th>What happens</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td class="num">0.3–1 g</td><td>Indefinite</td><td>Comfortable. Belters prefer low g.</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td class="num">~5 g</td><td>Minutes</td><td>"Body weighed five hundred kilos." Blackout without the juice.</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td class="num">6–10 g</td><td>Minutes to tens of minutes</td><td>Juiced combat burns; "almost ten gs" in Babylon's Ashes.</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td class="num">12 g</td><td>Brief</td><td>Rocinante's escape.</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td class="num">15–20 g</td><td>Seconds</td><td>Rocinante's drive ceiling. Extreme crew risk.</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td class="num">≥ 30 g</td><td>Brief</td><td>Only on Laconian liquid-immersion couches.</td><td><b class="tier t-wiki">WIKI</b></td></tr>
+      </tbody></table></div>
+    <p class="muted">Real NASA eyeballs-in limits: about 11 g for 1 minute, 6 g for 10 minutes, 4.5 g for 30 minutes. The books' multi-hour 5–12 g burns run 1.5–3× past that. <b class="tier t-real">REAL</b></p>
+  </section>
+
+  <section id="weapons">
+    <div class="sec-head"><div class="eyebrow">Weapons</div><h2>PDCs, railguns, torpedoes</h2></div>
+    <div class="two">
+      <div class="tbl"><table>
+        <thead><tr><th colspan="2">Point defense cannon (PDC)</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>Muzzle velocity</td><td class="num">5 km/s</td><td><b class="tier t-book">BOOK</b></td></tr>
+          <tr><td>Caliber</td><td class="num">40 mm</td><td><b class="tier t-show">SHOW</b></td></tr>
+          <tr><td>Round mass</td><td class="num">~25 g</td><td><b class="tier t-der">DERIVED</b></td></tr>
+          <tr><td>Rate of fire</td><td class="num">~4,000 rpm</td><td><b class="tier t-rpg">RPG</b> <b class="tier t-der">DERIVED</b></td></tr>
+          <tr><td>Crate</td><td class="num">20,000 rds, &gt;500 kg</td><td><b class="tier t-book">BOOK</b></td></tr>
+          <tr><td>Vs torpedoes</td><td class="num">1–15 km</td><td><b class="tier t-wiki">WIKI</b></td></tr>
+          <tr><td>Window vs 30 g torpedo</td><td class="num">2–6 s</td><td><b class="tier t-der">DERIVED</b></td></tr>
+          <tr><td>Mounts</td><td class="num">Roci 6 · Donnager 59</td><td><b class="tier t-rpg">RPG</b> <b class="tier t-show">SHOW</b></td></tr>
+        </tbody></table></div>
+      <div class="tbl"><table>
+        <thead><tr><th colspan="2">Rocinante keel railgun</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>Slug (books)</td><td class="num">2 kg tungsten</td><td><b class="tier t-book">BOOK</b></td></tr>
+          <tr><td>Velocity (books)</td><td class="num">"measurable fraction of c"</td><td><b class="tier t-book">BOOK</b></td></tr>
+          <tr><td>Sim default (books)</td><td class="num hl">1,500 km/s · 2.25 TJ</td><td><b class="tier t-der">DERIVED</b></td></tr>
+          <tr><td>Show</td><td class="num">1 kg at 9.98 km/s · 50 MJ</td><td><b class="tier t-show">SHOW</b></td></tr>
+          <tr><td>Rate of fire</td><td class="num">~1 per 6 s</td><td><b class="tier t-der">DERIVED</b></td></tr>
+          <tr><td>Ring Station guns</td><td class="num">30 rpm</td><td><b class="tier t-book">BOOK</b></td></tr>
+          <tr><td>Aiming</td><td>Point the whole hull</td><td><b class="tier t-book">BOOK</b></td></tr>
+          <tr><td>Recoil</td><td>Shoves the firing ship back</td><td><b class="tier t-book">BOOK</b></td></tr>
+        </tbody></table></div>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th colspan="2">Torpedoes</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Acceleration</td><td class="num hl">~150–177 g. Canterbury: ~200,000 km in 8 min.</td><td><b class="tier t-der">DERIVED</b></td></tr>
+        <tr><td>Floor</td><td>Faster than 15 g; outran the Razorback.</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td>Flight time</td><td class="num">3–10 min. Pella fight: "eight minutes and ten seconds" to PDC range.</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td>Δv budget</td><td class="num">100–1,000 km/s (default 500)</td><td><b class="tier t-der">DERIVED</b></td></tr>
+        <tr><td>Warheads</td><td>Plasma, high-explosive.</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td>Weakness</td><td>Coasting torpedoes are easy kills; defenders shot down an entire salvo in <i>Leviathan Falls</i>.</td><td><b class="tier t-book">BOOK</b></td></tr>
+        <tr><td>Loadout</td><td class="num">Roci: 2 tubes, 20 torpedoes. Martian flagship: "nearly ninety" left.</td><td><b class="tier t-book">BOOK</b> <b class="tier t-rpg">RPG</b></td></tr>
+      </tbody></table></div>
+    <div class="two">
+      <div class="calc"><h3>Exotic weapons</h3>
+        <ul class="plain">
+          <li><b>Drive plume:</b> an Epstein exhaust deals heavy damage astern. <b class="tier t-book">BOOK</b></li>
+          <li><b>Rock bombardment:</b> 3 stealth-coated rocks, seen about 1 s before impact. No canon mass or speed.</li>
+          <li><b>Laconian magnetic weapon:</b> one shot kills a ship or station, and firing it stuns the whole system for ~3 min. The "&lt;3,000,000 km" range is a wiki figure. <b class="tier t-wiki">WIKI</b></li>
+          <li><b>Jamming:</b> under 3 s of blindness was enough for 5 torpedo hits. <b class="tier t-book">BOOK</b></li>
+        </ul></div>
+      <div class="calc"><h3>What kills ships</h3>
+        <ol class="kill">
+          <li>Reactor containment failure. Dumping core stops it but kills the drive.</li>
+          <li>Torpedoes that saturate the PDC screen.</li>
+          <li>Railgun hits through vital systems.</li>
+          <li>Boarding.</li>
+          <li>Sensor blind spots. That's how the Heart of the Tempest died.</li>
+        </ol></div>
+    </div>
+  </section>
+
+  <section id="console">
+    <div class="sec-head"><div class="eyebrow">Console</div><h2>Calculators</h2>
+      <p class="muted">Straight Newtonian math with the defaults above. Drag to test a parameter before you commit to it.</p></div>
+    <div class="calcs">
+      <div class="calc" aria-labelledby="tq-h">
+        <h3 id="tq-h">Torpedo run</h3>
+        <div class="field"><label for="tq-a">Acceleration <output id="tq-a-o"></output></label><input id="tq-a" type="range" min="10" max="300" step="5" value="150"></div>
+        <div class="field"><label for="tq-r">Range <output id="tq-r-o"></output></label><input id="tq-r" type="range" min="3" max="6" step="0.01" value="5"></div>
+        <div class="field"><label for="tq-d">Δv budget <output id="tq-d-o"></output></label><input id="tq-d" type="range" min="50" max="1000" step="10" value="500"></div>
+        <div class="readout"><div><span>Time to target</span><b id="tq-t"></b></div><div><span>Impact speed</span><b id="tq-v"></b></div><div><span>Impact energy / kg</span><b id="tq-e"></b></div><div><span>Burn ends at</span><b id="tq-b"></b></div></div>
+        <div class="chip" id="tq-c"></div>
+      </div>
+      <div class="calc" aria-labelledby="rg-h">
+        <h3 id="rg-h">Railgun can't-dodge range</h3>
+        <div class="field"><label for="rg-v">Round speed <output id="rg-v-o"></output></label><input id="rg-v" type="range" min="0" max="3.5" step="0.01" value="1"></div>
+        <div class="field"><label for="rg-a">Target juke <output id="rg-a-o"></output></label><input id="rg-a" type="range" min="0.5" max="20" step="0.5" value="3"></div>
+        <div class="field"><label for="rg-w">Target half-width <output id="rg-w-o"></output></label><input id="rg-w" type="range" min="10" max="250" step="5" value="50"></div>
+        <div class="readout"><div><span>Hit-assured range</span><b id="rg-r"></b></div><div><span>Flight time at 1,000 km</span><b id="rg-t"></b></div><div><span>Energy, 2 kg slug</span><b id="rg-e"></b></div></div>
+        <div class="chip" id="rg-c"></div>
+      </div>
+      <div class="calc" aria-labelledby="tr-h">
+        <h3 id="tr-h">Flip-and-burn transit</h3>
+        <div class="field"><label for="tr-d">Distance <output id="tr-d-o"></output></label><input id="tr-d" type="range" min="0.05" max="20" step="0.05" value="1.5"></div>
+        <div class="field"><label for="tr-a">Acceleration <output id="tr-a-o"></output></label><input id="tr-a" type="range" min="0.1" max="30" step="0.1" value="1"></div>
+        <div class="readout"><div><span>Trip time</span><b id="tr-t"></b></div><div><span>Peak speed</span><b id="tr-v"></b></div><div><span>Δv needed</span><b id="tr-dv"></b></div><div><span>Peak, % of c</span><b id="tr-c"></b></div></div>
+        <div class="chip" id="tr-k"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="ships">
+    <div class="sec-head"><div class="eyebrow">Ship classes</div><h2>Suggested stat blocks</h2>
+      <p class="muted">Tuning defaults that blend canon, the <i>Ships of the Expanse</i> sourcebook, and scaling. Hull is in RPG soak dice. Rocinante mass sources run from 230 to 4,770 t; 300 t is the working pick.</p></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Class</th><th>Example</th><th>Length</th><th>Mass</th><th>Max g</th><th>Combat g</th><th>PDCs</th><th>Torps (tubes/mag)</th><th>Railguns</th><th>Hull</th></tr></thead>
+      <tbody>
+        <tr><td>Fast attack</td><td>Asp, Belter gunship</td><td class="num">20–35 m</td><td class="num">100–300 t</td><td class="num">15</td><td class="num">8</td><td class="num">2</td><td class="num">2 / 6–8</td><td class="num">0</td><td class="num">1d6</td></tr>
+        <tr><td>Light frigate</td><td>Rocinante</td><td class="num">46 m</td><td class="num">~300 t</td><td class="num">12 (15)</td><td class="num">6–8</td><td class="num">6</td><td class="num">2 / 20</td><td class="num">0–1 keel</td><td class="num">2d6</td></tr>
+        <tr><td>Stealth frigate</td><td>Anubis</td><td class="num">55 m</td><td class="num">~400 t</td><td class="num">10</td><td class="num">6</td><td class="num">4</td><td class="num">2 / 12</td><td class="num">1 keel</td><td class="num">2d6</td></tr>
+        <tr><td>Destroyer</td><td>Munroe, Pulsar</td><td class="num">130–150 m</td><td class="num">5–10 kt</td><td class="num">10</td><td class="num">5</td><td class="num">8–12</td><td class="num">4–8 / 24–40</td><td class="num">1 keel</td><td class="num">3d6</td></tr>
+        <tr><td>Cruiser</td><td>Scirocco, Raptor</td><td class="num">200–280 m</td><td class="num">30–60 kt</td><td class="num">8</td><td class="num">4</td><td class="num">20–30</td><td class="num">10–12 / 60</td><td class="num">1–2</td><td class="num">4d6</td></tr>
+        <tr><td>Battleship</td><td>Donnager, Truman</td><td class="num">375–500 m</td><td class="num">250 kt</td><td class="num">6</td><td class="num">3</td><td class="num">40–60</td><td class="num">9–24 / 150+</td><td class="num">2 turreted</td><td class="num">5d6</td></tr>
+        <tr><td>Laconian Magnetar</td><td>Heart of the Tempest</td><td class="num">~1 km</td><td class="num">1 Mt+</td><td class="num">6</td><td class="num">3</td><td class="num">many</td><td class="num">many</td><td class="num">+ field weapon</td><td class="num">6d6, self-repair</td></tr>
+        <tr><td>Ice hauler</td><td>Canterbury</td><td class="num">750 m</td><td class="num">~1 Mt</td><td class="num">1</td><td class="num">0.3</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">5d6, soft</td></tr>
+        <tr><td>Shuttle / pinnace</td><td>Knight, Razorback</td><td class="num">~20 m</td><td class="num">20–50 t</td><td class="num">7 / 15–20</td><td class="num">3 / 10</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">1d6</td></tr>
+        <tr><td>Generation ship</td><td>Behemoth</td><td class="num">2 km+</td><td class="num">10 Mt+</td><td class="num">0.3</td><td class="num">0.1</td><td class="num">170</td><td class="num">6 bays</td><td class="num">6</td><td class="num">6d6</td></tr>
+      </tbody></table></div>
+  </section>
+
+  <section id="sensors">
+    <div class="sec-head"><div class="eyebrow">Sensors &amp; stealth</div><h2>There is almost nowhere to hide</h2></div>
+    <div class="two">
+      <ul class="plain">
+        <li>A lit drive is visible across the whole system; real-physics estimates say 0.5–80 AU. Stealth works only with the drive cold. <b class="tier t-book">BOOK</b> <b class="tier t-real">REAL</b></li>
+        <li>Cold hull at room temperature: real telescopes could find it at 2–60 million km. For the sim, use 10,000–100,000 km for a bare hull and 1,000 km or less for a stealth-coated one. <b class="tier t-der">DERIVED</b></li>
+        <li>Canon stealth: Protogen black composite with active cooling, stealth-coated Free Navy rocks, the Rocinante's disguise kit. <b class="tier t-book">BOOK</b></li>
+      </ul>
+      <ul class="plain">
+        <li>One light-second is ~300,000 km. Inside torpedo range the lag is under a second; between planets it is minutes, so you see where the enemy was. <b class="tier t-real">REAL</b></li>
+        <li>Lighting the drive or firing any weapon reveals you for that turn and the next. <b class="tier t-der">DERIVED</b></li>
+        <li>RPG stealth: −2 to enemy detection, −3 at long range; the coating fails after 3 hull losses. <b class="tier t-rpg">RPG</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="model">
+    <div class="sec-head"><div class="eyebrow">Recommendation</div><h2>Simulator model</h2></div>
+    <div class="tbl"><table>
+      <thead><tr><th>System</th><th>Recommendation</th></tr></thead>
+      <tbody>
+        <tr><td>Physics</td><td>Newtonian, SI units, 64-bit floats, one local inertial frame per engagement. Fixed timestep with symplectic Euler or velocity Verlet. Skip gravity, relativity, and drive waste heat inside a fight.</td></tr>
+        <tr><td>Fast rounds</td><td>Trace railgun and PDC rounds as rays each tick instead of stepping them as particles.</td></tr>
+        <tr><td>Railgun hits</td><td>Probability from target lateral acceleration × flight time², not a hard range. Apply recoil Δv to the shooter.</td></tr>
+        <tr><td>Resources</td><td>Reaction mass (Δv), PDC rounds, torpedo magazine. Coasting torpedoes get easier to kill.</td></tr>
+        <tr><td>Crew</td><td>A g-dose meter (g × time). Blackout and injury risk climb steeply above 5 g, scaled by age and juice. Juice buys tolerance at a toxicity cost.</td></tr>
+        <tr><td>Sensors</td><td>Contacts timestamped with light lag. A lit drive is always detected. Firing breaks stealth.</td></tr>
+        <tr><td>Damage</td><td>Hull soak plus typed system losses: reactor, drive, sensors, thrusters, each weapon, crew. Reactor hits can escalate to containment failure.</td></tr>
+        <tr><td>Presets</td><td><b>Book</b>: railgun 1,500 km/s, 25 g PDC rounds. <b>Show</b>: railgun 10 km/s, 40 mm PDC rounds.</td></tr>
+      </tbody></table></div>
+  </section>
+
+  <footer>
+    <p>Compiled November 2026 from the nine novels and novellas, the Amazon series, the Green Ronin RPG, and the expanse.fandom wiki, with real-physics checks. The novels rarely give exact figures, so torpedo acceleration, railgun velocity, and capital-ship g are all derived and should be treated as tuning knobs.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var G = 9.80665, C = 299792.458;
+  function $(id) { return document.getElementById(id); }
+  function fmt(n, d) { return n.toLocaleString(undefined, { maximumFractionDigits: d == null ? 0 : d, minimumFractionDigits: 0 }); }
+  function km(n) { return n >= 1e6 ? fmt(n / 1e6, 2) + "M km" : n >= 100 ? fmt(n) + " km" : fmt(n, 1) + " km"; }
+  function dur(s) { if (s < 60) return fmt(s, 1) + " s"; if (s < 3600) return fmt(s / 60, 1) + " min"; if (s < 86400 * 2) return fmt(s / 3600, 1) + " h"; return fmt(s / 86400, 1) + " d"; }
+  function energy(j) { var u = [[1e18,"EJ"],[1e15,"PJ"],[1e12,"TJ"],[1e9,"GJ"],[1e6,"MJ"],[1e3,"kJ"]]; for (var i = 0; i < u.length; i++) if (j >= u[i][0]) return fmt(j / u[i][0], 2) + " " + u[i][1]; return fmt(j) + " J"; }
+  function chip(el, text, cls) { el.textContent = text; el.className = "chip" + (cls ? " " + cls : ""); }
+
+  function torp() {
+    var a = +$("tq-a").value * G, R = Math.pow(10, +$("tq-r").value) * 1000, dv = +$("tq-d").value * 1000;
+    $("tq-a-o").textContent = $("tq-a").value + " g";
+    $("tq-r-o").textContent = km(R / 1000);
+    $("tq-d-o").textContent = fmt(dv / 1000) + " km/s";
+    var tb = dv / a, db = 0.5 * a * tb * tb, t, v, coast;
+    if (R <= db) { t = Math.sqrt(2 * R / a); v = a * t; coast = false; } else { t = tb + (R - db) / dv; v = dv; coast = true; }
+    $("tq-t").textContent = dur(t);
+    $("tq-v").textContent = fmt(v / 1000) + " km/s";
+    $("tq-e").textContent = energy(0.5 * v * v);
+    $("tq-b").textContent = coast ? km(db / 1000) : "still burning";
+    if (coast) chip($("tq-c"), "Coasting on arrival: easy PDC kill", "warn");
+    else chip($("tq-c"), "Under thrust on arrival");
+  }
+
+  function rail() {
+    var v = Math.pow(10, +$("rg-v").value) * 1000;
+    var a = +$("rg-a").value * G, w = +$("rg-w").value;
+    $("rg-v-o").textContent = v >= 1e5 ? fmt(v / 1000) + " km/s (" + fmt(v / 1000 / C * 100, 2) + "% c)" : fmt(v / 1000, 1) + " km/s";
+    $("rg-a-o").textContent = $("rg-a").value + " g";
+    $("rg-w-o").textContent = w + " m";
+    var t = Math.sqrt(2 * w / a), r = v * t / 1000, e = 0.5 * 2 * v * v;
+    $("rg-r").textContent = km(r);
+    $("rg-t").textContent = dur(1e6 / v);
+    $("rg-e").textContent = energy(e);
+    if (v < 3e4) chip($("rg-c"), "Show-style gun: a knife-fight weapon", "warn");
+    else if (v < 1e6) chip($("rg-c"), "Matches \"hundreds of kilometers, not thousands\"");
+    else chip($("rg-c"), "Book \"fraction of c\": reach of thousands of km");
+  }
+
+  function trans() {
+    var d = +$("tr-d").value * 1.495978707e11, ag = +$("tr-a").value, a = ag * G;
+    $("tr-d-o").textContent = fmt(+$("tr-d").value, 2) + " AU";
+    $("tr-a-o").textContent = fmt(ag, 1) + " g";
+    var t = 2 * Math.sqrt(d / a), vp = a * t / 2;
+    $("tr-t").textContent = dur(t);
+    $("tr-v").textContent = fmt(vp / 1000) + " km/s";
+    $("tr-dv").textContent = fmt(2 * vp / 1000) + " km/s";
+    $("tr-c").textContent = fmt(vp / 1000 / C * 100, 2) + "%";
+    if (ag <= 1) chip($("tr-k"), "Crew fine indefinitely");
+    else if (ag <= 3) chip($("tr-k"), "Crew exhausted; juice for long burns", "warn");
+    else if (ag <= 10) chip($("tr-k"), "Juice required; crew strain over hours", "warn");
+    else if (ag <= 20) chip($("tr-k"), "Crew incapacitated over a long burn", "crit");
+    else chip($("tr-k"), "Liquid-immersion couches only", "crit");
+  }
+
+  ["tq-a","tq-r","tq-d"].forEach(function (id) { $(id).addEventListener("input", torp); });
+  ["rg-v","rg-a","rg-w"].forEach(function (id) { $(id).addEventListener("input", rail); });
+  ["tr-d","tr-a"].forEach(function (id) { $(id).addEventListener("input", trans); });
+  torp(); rail(); trans();
+
+  var NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, parent, text) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; parent.appendChild(e); return e; }
+
+  // Engagement bands, log10 km from -1 (100 m) to 10
+  (function () {
+    var svg = $("bandsvg"), L = 180, R = 940, lo = -1, hi = 10, top = 20, rowH = 38;
+    function x(k) { return L + (Math.log10(k) - lo) / (hi - lo) * (R - L); }
+    var bands = [
+      ["Boarding", 0.1, 1, "var(--muted)"],
+      ["PDC vs torpedoes", 1, 15, "var(--cool)"],
+      ["PDC vs ships", 1, 20, "var(--cool)"],
+      ["Railgun vs dodging ship", 10, 1000, "var(--t-rpg)"],
+      ["Capital railgun", 1000, 10000, "var(--t-rpg)"],
+      ["Torpedo launch", 1e4, 2e5, "var(--accent)"],
+      ["Drive-plume detection", 1e5, 1.2e10, "var(--t-wiki)"]
+    ];
+    var bottom = top + bands.length * rowH;
+    for (var p = lo; p <= hi; p++) {
+      var xx = x(Math.pow(10, p));
+      el("line", { x1: xx, x2: xx, y1: top - 6, y2: bottom, class: "grid", "stroke-width": 1 }, svg);
+      var lab = p < 0 ? "100 m" : p < 3 ? fmt(Math.pow(10, p)) + " km" : p < 6 ? fmt(Math.pow(10, p - 3)) + "k km" : p < 9 ? fmt(Math.pow(10, p - 6)) + "M km" : fmt(Math.pow(10, p - 9)) + "B km";
+      el("text", { x: xx, y: bottom + 18, "text-anchor": "middle", "font-size": 11 }, svg, lab);
+    }
+    el("line", { x1: L, x2: R, y1: bottom, y2: bottom, class: "axis", "stroke-width": 1 }, svg);
+    bands.forEach(function (b, i) {
+      var y = top + i * rowH;
+      el("text", { x: L - 10, y: y + rowH / 2 + 4, "text-anchor": "end", class: "lab" }, svg, b[0]);
+      el("rect", { x: x(b[1]), y: y + 8, width: Math.max(4, x(b[2]) - x(b[1])), height: rowH - 16, rx: 3, fill: b[3], "fill-opacity": 0.85 }, svg);
+    });
+    var ls = x(299792), au = x(1.496e8);
+    el("line", { x1: ls, x2: ls, y1: top - 10, y2: bottom, stroke: "var(--ink)", "stroke-dasharray": "4 4", "stroke-width": 1.2 }, svg);
+    el("text", { x: ls + 5, y: top - 2, "font-size": 11 }, svg, "1 light-second");
+    el("line", { x1: au, x2: au, y1: top - 10, y2: bottom, stroke: "var(--ink)", "stroke-dasharray": "1 4", "stroke-width": 1.2 }, svg);
+    el("text", { x: au + 5, y: top - 2, "font-size": 11 }, svg, "1 AU");
+    el("text", { x: L, y: bottom + 40, "font-size": 11 }, svg, "Distance (log scale)");
+  })();
+
+  // Crew g-tolerance scale 0..32 g
+  (function () {
+    var svg = $("gsvg"), L = 30, R = 930, max = 32;
+    function x(g) { return L + g / max * (R - L); }
+    var zones = [[0, 1, "var(--ok)", "Indefinite"], [1, 5, "var(--cool)", "Hours, tiring"], [5, 12, "var(--warn)", "Juice required"], [12, 20, "var(--crit)", "Seconds, extreme risk"], [20, 32, "var(--t-show)", "Immersion couches"]];
+    zones.forEach(function (z) {
+      el("rect", { x: x(z[0]), y: 40, width: x(z[1]) - x(z[0]), height: 34, fill: z[2], "fill-opacity": 0.8 }, svg);
+      el("text", { x: (x(z[0]) + x(z[1])) / 2, y: 30, "text-anchor": "middle", class: "lab" }, svg, z[3]);
+    });
+    for (var g = 0; g <= max; g += 4) {
+      el("line", { x1: x(g), x2: x(g), y1: 74, y2: 80, class: "axis" }, svg);
+      el("text", { x: x(g), y: 94, "text-anchor": "middle", "font-size": 11 }, svg, g + " g");
+    }
+    var marks = [[0.3, "Cruise", 0, "start"], [5, "500 kg body", 0, "start"], [10, "\"Almost ten gs\"", 1, "end"], [11.5, "Epstein", 2, "end"], [12, "Roci escape", 0, "start"], [17, "Roci (show)", 1, "start"], [30, "Falcon", 0, "end"]];
+    marks.forEach(function (m) {
+      var yy = 116 + m[2] * 22, dx = m[3] === "end" ? -4 : 4;
+      el("line", { x1: x(m[0]), x2: x(m[0]), y1: 74, y2: yy + 4, stroke: "var(--ink)", "stroke-width": 1 }, svg);
+      el("circle", { cx: x(m[0]), cy: 74, r: 3, fill: "var(--ink)" }, svg);
+      el("text", { x: x(m[0]) + dx, y: yy, "text-anchor": m[3], class: "lab" }, svg, m[1]);
+    });
+  })();
+})();
+</script>
